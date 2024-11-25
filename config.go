@@ -11,6 +11,7 @@ import (
 	"regexp"
 	"strings"
 
+	_ "github.com/rgglez/go-storage/services/oss/v3"
 	"github.com/rgglez/storage/storage"
 
 	yaml "gopkg.in/yaml.v3"
