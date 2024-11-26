@@ -2,7 +2,6 @@ package config
 
 import (
 	"errors"
-	"fmt"
 	"path/filepath"
 
 	"log"
@@ -72,9 +71,6 @@ func LoadConfig(args map[string]string) (map[string]interface{}, error) {
 	fileInfo, err := os.Stat(path)
 	if (err != nil || fileInfo.Size() == 0) && !strings.HasPrefix(cnn, "file://") {
 		// no existe el archivo local y es un recurso remoto, descargar
-		fmt.Println("*** AQUI ***")
-		fmt.Println(cnn)
-		fmt.Println("*** AQUI ***")
 		store := storage.NewStorage(cnn)
 
 		remotePath := domain + "/" + stage + "/" + file
