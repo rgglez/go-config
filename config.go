@@ -16,7 +16,7 @@ import (
 	yaml "gopkg.in/yaml.v3"
 )
 
-func LoadConfig(args map[string]string) (map[string]interface{}, error) {
+func configLoader(args map[string]string) (map[string]interface{}, error) {
 	var config map[string]interface{}
 
 	cnn := ""
@@ -106,4 +106,19 @@ func LoadConfig(args map[string]string) (map[string]interface{}, error) {
 	}
 
 	return config, nil
+}
+
+func LoadConfigDirect(args map[string]string, config *map[string]interface{}) error {
+	var err error
+	var cfg map[string]interface{}
+	cfg, err = configLoader(args)
+
+	config = &cfg
+	return err
+}
+
+func LoadConfig(args map[string]string) (map[string]interface{}, error) {
+	config, err := configLoader(args)
+
+	return config, err
 }
