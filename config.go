@@ -18,7 +18,6 @@ package config
 
 import (
 	"crypto/sha1"
-	"errors"
 	"fmt"
 	"io"
 	"log"
@@ -39,6 +38,7 @@ import (
 type Configurator struct {
 	Storage    *storage.Storage
 	ConfigFile string
+	TmpDir     string
 }
 
 //-----------------------------------------------------------------------------
@@ -47,6 +47,7 @@ type Config struct {
 	Referrer string
 	Stage    string
 	File     string
+	TmpDir   string
 }
 
 //-----------------------------------------------------------------------------
@@ -55,6 +56,7 @@ func NewConfigurator(cfg *Config, store *storage.Storage) *Configurator {
 	var domain string
 	var stage string
 	var file string
+	var tmpDir string
 
 	// Get the domain from the referrer
 	url, err := url.Parse(cfg.Referrer)
@@ -69,10 +71,18 @@ func NewConfigurator(cfg *Config, store *storage.Storage) *Configurator {
 	stage = cfg.Stage
 
 	// The file part
+	if cfg.File == "" {
+		panic("the configuration file name can not be empty")
+	}
 	file = cfg.File
 
 	// Construct the path
 	path := domain + "/" + stage + "/" + file
+
+	// The temporary dir
+	if cfg.TmpDir == "" {
+		tmpDir = os.TempDir()
+	}
 
 	// Remove duplicated /
 	re := regexp.MustCompile(`(\/)+`)
@@ -83,33 +93,25 @@ func NewConfigurator(cfg *Config, store *storage.Storage) *Configurator {
 	return &Configurator{
 		Storage:    store,
 		ConfigFile: path,
+		TmpDir:     tmpDir,
 	}
-}
-
-//-----------------------------------------------------------------------------
-
-func fileExists(filePath string) bool {
-	_, error := os.Stat(filePath)
-	return !errors.Is(error, os.ErrNotExist)
 }
 
 //-----------------------------------------------------------------------------
 
 func (c *Configurator) Load(config interface{}) error {
-	// Local file path
+	// Local file path in the system's temporary directory
 	h := sha1.New()
 	io.WriteString(h, c.ConfigFile)
-	tmpFilePath, err := os.CreateTemp(os.TempDir(), "cfg_"+fmt.Sprintf("%x", h.Sum(nil)))
+	tmpFilePath, err := os.CreateTemp(c.TmpDir, "cfg_"+fmt.Sprintf("%x", h.Sum(nil)))
 	if err != nil {
 		return err
 	}
 	defer os.Remove(tmpFilePath.Name())
 
-	// If local file exists does not exist, load it from remote resource
-	if fileExists(tmpFilePath.Name()) {
-		if err := c.Storage.Read(c.ConfigFile, tmpFilePath.Name()); err != nil {
-			return err
-		}
+	// Copy the remote YAML file to a local temporary file for parsing...
+	if err := c.Storage.Read(c.ConfigFile, tmpFilePath.Name()); err != nil {
+		return err
 	}
 
 	// Read the local file

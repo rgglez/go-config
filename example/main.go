@@ -40,7 +40,7 @@ func main() {
 	c := config.NewConfigurator(&config.Config{
 		Referrer: "",
 		Stage:    "",
-		File:     "auth.yaml",
+		File:     "config.yaml",
 	}, s)
 
 	// Loading YAML file into a map...
