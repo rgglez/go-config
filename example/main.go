@@ -17,6 +17,7 @@ limitations under the License.
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/kr/pretty"
@@ -31,21 +32,36 @@ type Configuracion struct {
 }
 
 func main() {
+	// Creating the storage service
 	cnn := "oss://test/?credential=hmac:Secret123:Secret123&endpoint=http://127.0.0.1:9090&name=test"
 	s := storage.NewStorage(cnn)
 
+	// Setting up the configuration loader
 	c := config.NewConfigurator(&config.Config{
 		Referrer: "",
 		Stage:    "",
 		File:     "auth.yaml",
 	}, s)
 
-	//var cfg Configuracion
-	var cfg map[string]interface{}
-	err := c.Load(&cfg)
+	// Loading YAML file into a map...
+	var cfgMap map[string]interface{}
+	err := c.Load(&cfgMap)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	pretty.Println(cfg)
+	fmt.Println("Loading YAML file into a map...")
+	pretty.Println(cfgMap)
+
+	// Loading YAML file into a struct...
+	var cfgStruct Configuracion
+	err = c.Load(&cfgStruct)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Here you could validate the struct, for example...
+
+	fmt.Println("Loading YAML file into a struct...")
+	pretty.Println(cfgStruct)
 }

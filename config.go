@@ -118,22 +118,24 @@ func (c *Configurator) Load(config interface{}) error {
 		return err
 	}
 
-	// Verify we got a pointer to a modifiable value
-	targetValue := reflect.ValueOf(config)
-	if targetValue.Kind() != reflect.Ptr {
-		return fmt.Errorf("must pass a pointer, got %T", config)
+	// Get the underlying value from the interface
+	v := reflect.ValueOf(config)
+
+	// Ensure we got a pointer
+	if v.Kind() != reflect.Ptr {
+		return fmt.Errorf("target must be a pointer, got %T", config)
 	}
 
-	// Create a new value of the correct type
-	newValue := reflect.New(targetValue.Elem().Type())
+	// Create a new pointer if it's nil
+	if v.IsNil() {
+		v.Set(reflect.New(v.Type().Elem()))
+	}
 
-	// Unmarshal into our new value
-	if err := yaml.Unmarshal(data, newValue.Interface()); err != nil {
+	// Unmarshal into the actual pointer value
+	err = yaml.Unmarshal(data, v.Interface())
+	if err != nil {
 		return err
 	}
-
-	// THIS IS THE CRUCIAL PART - modify the original value
-	targetValue.Elem().Set(newValue.Elem())
 
 	// Close (and remove) the file when done
 	err = tmpFilePath.Close()
