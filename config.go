@@ -20,7 +20,6 @@ import (
 	"crypto/sha1"
 	"fmt"
 	"io"
-	"log"
 	"net/url"
 	"os"
 	"reflect"
@@ -120,6 +119,12 @@ func (c *Configurator) Load(config interface{}) error {
 		return err
 	}
 
+	// Close (and remove) the file when done
+	err = tmpFilePath.Close()
+	if err != nil {
+		return err
+	}
+
 	// Get the underlying value from the interface
 	v := reflect.ValueOf(config)
 
@@ -137,13 +142,6 @@ func (c *Configurator) Load(config interface{}) error {
 	err = yaml.Unmarshal(data, v.Interface())
 	if err != nil {
 		return err
-	}
-
-	// Close (and remove) the file when done
-	err = tmpFilePath.Close()
-	if err != nil {
-		log.Printf("error closing file: %v", err)
-		return nil
 	}
 
 	return nil
