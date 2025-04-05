@@ -48,7 +48,7 @@ For example, for a bucket named `test` in an [ossemulator](https://github.com/al
 cnn := "oss://test/?credential=hmac:Secret123:Secret123&endpoint=http://127.0.0.1:9090&name=test"
 ```
 
-The configuration file path is formed by this components:
+The configuration file path is formed by these components:
 
 ```go
 domain + "/" + stage + "/" + file
