@@ -100,6 +100,10 @@ func NewConfigurator(cfg *Config, store *storage.Storage) *Configurator {
 
 func (c *Configurator) Load(config interface{}) error {
 	// Local file path in the system's temporary directory
+	if c.TmpDir == "" {
+		c.TmpDir = os.TempDir()
+	}
+
 	h := sha1.New()
 	io.WriteString(h, c.ConfigFile)
 	tmpFilePath, err := os.CreateTemp(c.TmpDir, "cfg_"+fmt.Sprintf("%x", h.Sum(nil)))
