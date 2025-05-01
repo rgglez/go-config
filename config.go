@@ -90,6 +90,8 @@ func NewConfigurator(cfg *Config, store *storage.Storage) *Configurator {
 		return "/"
 	})
 
+	path = strings.TrimLeft(path, "/")
+
 	return &Configurator{
 		Storage:    store,
 		ConfigFile: path,
