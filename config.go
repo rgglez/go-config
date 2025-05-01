@@ -90,11 +90,6 @@ func NewConfigurator(cfg *Config, store *storage.Storage) *Configurator {
 		return "/"
 	})
 
-	fmt.Println("--------------------------------------------")
-	pretty.Println(tmpDir)
-	pretty.Println(path)
-	fmt.Println("--------------------------------------------")
-
 	return &Configurator{
 		Storage:    store,
 		ConfigFile: path,
@@ -121,6 +116,10 @@ func (c *Configurator) Load(config interface{}) error {
 
 	// Copy the remote YAML file to a local temporary file for parsing...
 	if err := c.Storage.Read(c.ConfigFile, tmpFilePath.Name()); err != nil {
+		fmt.Println("-----------------------------------------------------------")
+		pretty.Println(c.ConfigFile)
+		pretty.Println(tmpFilePath.Name())
+		fmt.Println("-----------------------------------------------------------")
 		pretty.Println(err)
 		return err
 	}
