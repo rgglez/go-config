@@ -26,6 +26,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/kr/pretty"
 	_ "github.com/rgglez/go-storage/services/oss/v3"
 	"github.com/rgglez/storage/storage"
 
@@ -108,24 +109,28 @@ func (c *Configurator) Load(config interface{}) error {
 	io.WriteString(h, c.ConfigFile)
 	tmpFilePath, err := os.CreateTemp(c.TmpDir, "cfg_"+fmt.Sprintf("%x", h.Sum(nil)))
 	if err != nil {
+		pretty.Println(err)
 		return err
 	}
 	defer os.Remove(tmpFilePath.Name())
 
 	// Copy the remote YAML file to a local temporary file for parsing...
 	if err := c.Storage.Read(c.ConfigFile, tmpFilePath.Name()); err != nil {
+		pretty.Println(err)
 		return err
 	}
 
 	// Read the local file
 	data, err := os.ReadFile(tmpFilePath.Name())
 	if err != nil {
+		pretty.Println(err)
 		return err
 	}
 
 	// Close (and remove) the file when done
 	err = tmpFilePath.Close()
 	if err != nil {
+		pretty.Println(err)
 		return err
 	}
 
@@ -145,6 +150,7 @@ func (c *Configurator) Load(config interface{}) error {
 	// Unmarshal into the actual pointer value
 	err = yaml.Unmarshal(data, v.Interface())
 	if err != nil {
+		pretty.Println(err)
 		return err
 	}
 
