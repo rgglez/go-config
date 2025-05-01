@@ -90,6 +90,11 @@ func NewConfigurator(cfg *Config, store *storage.Storage) *Configurator {
 		return "/"
 	})
 
+	fmt.Println("--------------------------------------------")
+	pretty.Println(tmpDir)
+	pretty.Println(path)
+	fmt.Println("--------------------------------------------")
+
 	return &Configurator{
 		Storage:    store,
 		ConfigFile: path,
