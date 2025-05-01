@@ -107,7 +107,7 @@ func (c *Configurator) Load(config interface{}) error {
 
 	h := sha1.New()
 	io.WriteString(h, c.ConfigFile)
-	tmpFilePath, err := os.CreateTemp(c.TmpDir, "cfg_"+fmt.Sprintf("%x", h.Sum(nil)))
+	tmpFilePath, err := os.CreateTemp(c.TmpDir, "cfg_"+fmt.Sprintf("%x", h.Sum(nil))+".yaml")
 	if err != nil {
 		pretty.Println(err)
 		return err
