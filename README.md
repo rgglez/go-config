@@ -9,7 +9,7 @@
 ![GitHub stars](https://img.shields.io/github/stars/rgglez/go-config?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/rgglez/go-config?style=social)
 
-`go-config` is a module which a YAML configuration file from a "remote" source. It supports multiple storage backends through [storage](https://github.com/rgglez/storage) and [go-storage](https://github.com/rgglez/go-storage).
+`go-config` is a module which loads a YAML configuration file from a "remote" source. It supports multiple storage backends through [storage](https://github.com/rgglez/storage) and [go-storage](https://github.com/rgglez/go-storage).
 
 The intended usage is to load the configuration from a YAML file, for a web application written in [Go](https://golang.org). The file could be local or remote (from any source supported by [go-storage](https://github.com/rgglez/go-storage)).
 
@@ -56,7 +56,7 @@ The configuration file path is formed by these components:
 domain + "/" + stage + "/" + file
 ```
 
-where the `domain` is obtained from the `Referrer`. 
+where the `domain` is obtained from the `Referrer`.
 
 Since `domain` and `stage` are optional, the file could be in the root of the remote path. For instance, if the source is a S3 bucket, the key could:
 
@@ -64,7 +64,7 @@ Since `domain` and `stage` are optional, the file could be in the root of the re
 example.com/config.yaml
 ```
 
-or 
+or
 
 ```
 prod/config.yaml
