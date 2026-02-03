@@ -103,6 +103,6 @@ and their respective dependencies.
 
 ## License
 
-Copyright 2024 Rodolfo González González.
+Copyright 2026 Rodolfo González González.
 
 Released under [Apache 2.0 license](LICENSE).
