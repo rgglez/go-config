@@ -105,4 +105,4 @@ and their respective dependencies.
 
 Copyright 2026 Rodolfo González González.
 
-Released under [Apache 2.0 license](LICENSE).
+Licensed under [Apache 2.0 license](LICENSE).
