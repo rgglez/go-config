@@ -9,7 +9,7 @@
 ![GitHub stars](https://img.shields.io/github/stars/rgglez/go-config?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/rgglez/go-config?style=social)
 
-`go-config` is a module which loads a YAML configuration file from a "remote" source. It supports multiple storage backends through [storage](https://github.com/rgglez/storage) and [go-storage](https://github.com/rgglez/go-storage).
+`go-config` is a module which loads a YAML configuration file from a "remote" source. It supports multiple storage backends through [go-storage](https://github.com/rgglez/go-storage).
 
 The intended usage is to load the configuration from a YAML file, for a web application written in [Go](https://golang.org). The file could be local or remote (from any source supported by [go-storage](https://github.com/rgglez/go-storage)).
 
@@ -36,10 +36,15 @@ The configuration `config.Config` struct taken as the first parameter has this p
 * `File`     string, required, the file name of the configuration file.
 * `TmpDir`   string, optional path for a temporary directory where the remote file will be downloaded into a local temporary file.
 
-The second parameter, `s` in the example, must be a [storage](https://github.com/rgglez/storage) object:
+The second parameter, `s` in the example, must be a `types.Storager` from [go-storage](https://github.com/rgglez/go-storage). You can obtain one using `services.NewStoragerFromString`:
 
 ```go
-s := storage.NewStorage(cnn)
+import (
+    services "github.com/rgglez/go-storage/v5/services"
+    _ "github.com/rgglez/go-storage/services/oss/v3" // or whichever backend you need
+)
+
+s, err := services.NewStoragerFromString(cnn)
 ```
 
 Where `cnn` is a valid connection string as specified by [go-storage](https://github.com/rgglez/go-storage).
@@ -96,10 +101,9 @@ See the [sample](example/) code.
 
 This module uses:
 
-* [storage](github.com/rgglez/storage)
 * [go-storage](github.com/rgglez/go-storage)
 
-and their respective dependencies.
+and its respective dependencies.
 
 ## License
 

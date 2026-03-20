@@ -17,6 +17,7 @@ limitations under the License.
 package config
 
 import (
+	"context"
 	"crypto/sha1"
 	"fmt"
 	"io"
@@ -27,8 +28,7 @@ import (
 	"strings"
 
 	"github.com/kr/pretty"
-	_ "github.com/rgglez/go-storage/services/oss/v3"
-	"github.com/rgglez/storage/storage"
+	types "github.com/rgglez/go-storage/v5/types"
 
 	yaml "gopkg.in/yaml.v3"
 )
@@ -36,7 +36,7 @@ import (
 //-----------------------------------------------------------------------------
 
 type Configurator struct {
-	Storage    *storage.Storage
+	Storage    types.Storager
 	ConfigFile string
 	TmpDir     string
 }
@@ -52,7 +52,7 @@ type Config struct {
 
 //-----------------------------------------------------------------------------
 
-func NewConfigurator(cfg *Config, store *storage.Storage) *Configurator {
+func NewConfigurator(cfg *Config, store types.Storager) *Configurator {
 	var domain string
 	var stage string
 	var file string
@@ -117,7 +117,8 @@ func (c *Configurator) Load(config interface{}) error {
 	defer os.Remove(tmpFilePath.Name())
 
 	// Copy the remote YAML file to a local temporary file for parsing...
-	if err := c.Storage.Read(c.ConfigFile, tmpFilePath.Name()); err != nil {
+	ctx := context.Background()
+	if _, err := c.Storage.ReadWithContext(ctx, c.ConfigFile, tmpFilePath); err != nil {
 		pretty.Println(err)
 		return err
 	}
