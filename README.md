@@ -97,6 +97,29 @@ err = c.Load(&cfgStruct)
 
 See the [sample](example/) code.
 
+## Makefile
+
+A `Makefile` is provided for version tagging using [semver](https://semver.org/).
+
+| Target | Description |
+|--------|-------------|
+| `make tag-current` | Prints the latest semver tag (e.g. `v0.2.1`). Defaults to `v0.0.0` if no tags exist. |
+| `make tag-patch` | Creates a new tag incrementing the patch component by 1 (e.g. `v0.2.1` → `v0.2.2`). |
+| `make tag-push` | Pushes the latest tag to the remote repository. |
+
+Typical workflow:
+
+```bash
+make tag-patch   # create the new tag locally
+make tag-push    # push it to the remote
+```
+
+Or in a single step:
+
+```bash
+make tag-patch tag-push
+```
+
 ## Dependencies
 
 This module uses:

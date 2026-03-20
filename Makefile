@@ -23,5 +23,5 @@ tag-patch:
 
 ## Push the latest tag to the remote
 tag-push:
-	@echo "Pushing $(NEXT_TAG) to remote..."
-	git push origin $(NEXT_TAG)
+	@echo "Pushing $(CURRENT_TAG) to remote..."
+	git push origin $(CURRENT_TAG)
