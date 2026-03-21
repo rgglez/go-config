@@ -25,3 +25,4 @@ tag-patch:
 tag-push:
 	@echo "Pushing $(CURRENT_TAG) to remote..."
 	git push origin $(CURRENT_TAG)
+
