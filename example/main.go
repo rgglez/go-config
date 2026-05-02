@@ -21,47 +21,72 @@ import (
 	"log"
 
 	"github.com/kr/pretty"
-	storage "github.com/rgglez/storage/storage"
+	"github.com/rgglez/go-storage/services/oss/v3"
+	"github.com/rgglez/go-storage/v5/pairs"
 
 	config "github.com/rgglez/go-config"
 )
 
-type Configuracion struct {
-	ID       string `yaml:"ID"`
-	Referrer string `yaml:"REFERRER"`
+type DBConfig struct {
+	Host string `yaml:"host"`
+	Port int    `yaml:"port"`
+	Name string `yaml:"name"`
+}
+
+type Feature struct {
+	ID      string `yaml:"id"`
+	Enabled bool   `yaml:"enabled"`
+}
+
+func (f Feature) GetID() string { return f.ID }
+
+type AppConfig struct {
+	AppName  string    `yaml:"app_name"`
+	Version  string    `yaml:"version"`
+	Debug    bool      `yaml:"debug"`
+	Database DBConfig  `yaml:"database"`
+	Features []Feature `yaml:"features"`
 }
 
 func main() {
-	// Creating the storage service
-	cnn := "oss://test/?credential=hmac:Secret123:Secret123&endpoint=http://127.0.0.1:9090&name=test"
-	s := storage.NewStorage(cnn)
-
-	// Setting up the configuration loader
-	c := config.NewConfigurator(&config.Config{
-		Referrer: "",
-		Stage:    "",
-		File:     "config.yaml",
-	}, s)
-
-	// Loading YAML file into a map...
-	var cfgMap map[string]interface{}
-	err := c.Load(&cfgMap)
+	// Connect to an OSS-compatible bucket (MinIO, Alibaba OSS, etc.).
+	// Adjust credential, endpoint and name for your environment.
+	_, store, err := oss.New(
+		pairs.WithCredential("hmac:Secret123:Secret123"),
+		pairs.WithEndpoint("http://127.0.0.1:9090"),
+		pairs.WithName("test"),
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println("Loading YAML file into a map...")
+	// Path in storage will be: myapp.example.com/prod/config.yaml
+	c := config.NewConfigurator(&config.Config{
+		Referrer: "https://myapp.example.com",
+		Stage:    "prod",
+		File:     "config.yaml",
+	}, store)
+
+	// Load into a generic map.
+	var cfgMap map[string]any
+	if err := c.Load(&cfgMap); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("--- map ---")
 	pretty.Println(cfgMap)
 
-	// Loading YAML file into a struct...
-	var cfgStruct Configuracion
-	err = c.Load(&cfgStruct)
+	// Load into a typed struct.
+	var cfg AppConfig
+	if err := c.Load(&cfg); err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println("--- struct ---")
+	pretty.Println(cfg)
+
+	// Look up a feature flag by ID.
+	f, err := config.FindByID(cfg.Features, "dark-mode")
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	// Here you could validate the struct, for example...
-
-	fmt.Println("Loading YAML file into a struct...")
-	pretty.Println(cfgStruct)
+	fmt.Printf("dark-mode enabled: %v\n", f.Enabled)
 }

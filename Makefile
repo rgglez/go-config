@@ -1,4 +1,4 @@
-.PHONY: tag-current tag-patch tag-push
+.PHONY: tag-current tag-next tag-push
 
 # Last semver tag (falls back to v0.0.0 if none exists)
 CURRENT_TAG := $(shell git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$$' | head -1)
@@ -16,7 +16,7 @@ tag-current:
 	@echo $(CURRENT_TAG)
 
 ## Create a new patch tag (e.g. v0.2.1 -> v0.2.2)
-tag-patch:
+tag-next:
 	@echo "Current tag: $(CURRENT_TAG)"
 	@echo "New tag:     $(NEXT_TAG)"
 	git tag $(NEXT_TAG)

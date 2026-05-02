@@ -17,12 +17,10 @@ limitations under the License.
 package config
 
 import (
+	"bytes"
 	"context"
-	"crypto/sha1"
 	"fmt"
-	"io"
 	"net/url"
-	"os"
 	"reflect"
 	"regexp"
 	"strings"
@@ -38,7 +36,6 @@ import (
 type Configurator struct {
 	Storage    types.Storager
 	ConfigFile string
-	TmpDir     string
 }
 
 //-----------------------------------------------------------------------------
@@ -47,7 +44,6 @@ type Config struct {
 	Referrer string
 	Stage    string
 	File     string
-	TmpDir   string
 }
 
 //-----------------------------------------------------------------------------
@@ -56,7 +52,6 @@ func NewConfigurator(cfg *Config, store types.Storager) *Configurator {
 	var domain string
 	var stage string
 	var file string
-	var tmpDir string
 
 	// Get the domain from the referrer
 	url, err := url.Parse(cfg.Referrer)
@@ -79,11 +74,6 @@ func NewConfigurator(cfg *Config, store types.Storager) *Configurator {
 	// Construct the path
 	path := domain + "/" + stage + "/" + file
 
-	// The temporary dir
-	if cfg.TmpDir == "" {
-		tmpDir = os.TempDir()
-	}
-
 	// Remove duplicated /
 	re := regexp.MustCompile(`(\/)+`)
 	path = re.ReplaceAllStringFunc(path, func(m string) string {
@@ -95,44 +85,15 @@ func NewConfigurator(cfg *Config, store types.Storager) *Configurator {
 	return &Configurator{
 		Storage:    store,
 		ConfigFile: path,
-		TmpDir:     tmpDir,
 	}
 }
 
 //-----------------------------------------------------------------------------
 
 func (c *Configurator) Load(config interface{}) error {
-	// Local file path in the system's temporary directory
-	if c.TmpDir == "" {
-		c.TmpDir = os.TempDir()
-	}
-
-	h := sha1.New()
-	io.WriteString(h, c.ConfigFile)
-	tmpFilePath, err := os.CreateTemp(c.TmpDir, "cfg_"+fmt.Sprintf("%x", h.Sum(nil))+".yaml")
-	if err != nil {
-		pretty.Println(err)
-		return err
-	}
-	defer os.Remove(tmpFilePath.Name())
-
-	// Copy the remote YAML file to a local temporary file for parsing...
+	var buf bytes.Buffer
 	ctx := context.Background()
-	if _, err := c.Storage.ReadWithContext(ctx, c.ConfigFile, tmpFilePath); err != nil {
-		pretty.Println(err)
-		return err
-	}
-
-	// Read the local file
-	data, err := os.ReadFile(tmpFilePath.Name())
-	if err != nil {
-		pretty.Println(err)
-		return err
-	}
-
-	// Close (and remove) the file when done
-	err = tmpFilePath.Close()
-	if err != nil {
+	if _, err := c.Storage.ReadWithContext(ctx, c.ConfigFile, &buf); err != nil {
 		pretty.Println(err)
 		return err
 	}
@@ -151,8 +112,7 @@ func (c *Configurator) Load(config interface{}) error {
 	}
 
 	// Unmarshal into the actual pointer value
-	err = yaml.Unmarshal(data, v.Interface())
-	if err != nil {
+	if err := yaml.Unmarshal(buf.Bytes(), v.Interface()); err != nil {
 		pretty.Println(err)
 		return err
 	}

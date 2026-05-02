@@ -1,2 +1,14 @@
-ID: Hola
-REFERRER: https://www.disney.com
+app_name: my-service
+version: "1.0.0"
+debug: false
+
+database:
+  host: localhost
+  port: 5432
+  name: mydb
+
+features:
+  - id: dark-mode
+    enabled: true
+  - id: beta-ui
+    enabled: false

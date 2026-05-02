@@ -110,14 +110,14 @@ A `Makefile` is provided for version tagging using [semver](https://semver.org/)
 Typical workflow:
 
 ```bash
-make tag-patch   # create the new tag locally
+make tag-next   # create the new tag locally
 make tag-push    # push it to the remote
 ```
 
 Or in a single step:
 
 ```bash
-make tag-patch tag-push
+make tag-next tag-push
 ```
 
 ## Dependencies
