@@ -1,4 +1,4 @@
-.PHONY: tag-current tag-next tag-push
+.PHONY: tag-current tag-next tag-push test
 
 # Last semver tag (falls back to v0.0.0 if none exists)
 CURRENT_TAG := $(shell git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$$' | head -1)
@@ -26,3 +26,6 @@ tag-push:
 	@echo "Pushing $(NEXT_TAG) to remote..."
 	git push origin $(NEXT_TAG)
 
+## Executes go test
+test:
+	go test
