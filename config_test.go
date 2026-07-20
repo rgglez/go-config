@@ -83,6 +83,23 @@ func TestLoad_IntoMap(t *testing.T) {
 	}
 }
 
+func TestLoad_NilStorage(t *testing.T) {
+	c := &config.Configurator{ConfigFile: "config.yaml"}
+	var cfg appConfig
+	if err := c.Load(&cfg); err == nil {
+		t.Error("expected error for nil storage, got nil")
+	}
+}
+
+func TestNewConfigurator_NilStorePanics(t *testing.T) {
+	defer func() {
+		if r := recover(); r == nil {
+			t.Error("expected panic for nil store, got none")
+		}
+	}()
+	config.NewConfigurator(&config.Config{File: "config.yaml"}, nil)
+}
+
 func TestLoad_StorageError(t *testing.T) {
 	want := errors.New("storage unavailable")
 	c := newConfigurator("", want)

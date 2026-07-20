@@ -49,6 +49,9 @@ type Config struct {
 //-----------------------------------------------------------------------------
 
 func NewConfigurator(cfg *Config, store types.Storager) *Configurator {
+	if store == nil {
+		panic("store must not be nil")
+	}
 	var domain string
 	var stage string
 	var file string
@@ -91,6 +94,9 @@ func NewConfigurator(cfg *Config, store types.Storager) *Configurator {
 //-----------------------------------------------------------------------------
 
 func (c *Configurator) Load(config interface{}) error {
+	if c.Storage == nil {
+		return fmt.Errorf("storage is not set")
+	}
 	var buf bytes.Buffer
 	ctx := context.Background()
 	if _, err := c.Storage.ReadWithContext(ctx, c.ConfigFile, &buf); err != nil {
