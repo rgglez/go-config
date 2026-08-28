@@ -4,7 +4,6 @@
 ![GitHub all releases](https://img.shields.io/github/downloads/rgglez/go-config/total)
 ![GitHub issues](https://img.shields.io/github/issues/rgglez/go-config)
 ![GitHub commit activity](https://img.shields.io/github/commit-activity/y/rgglez/go-config)
-[![Go Report Card](https://goreportcard.com/badge/github.com/rgglez/go-config)](https://goreportcard.com/report/github.com/rgglez/go-config)
 [![GitHub release](https://img.shields.io/github/release/rgglez/go-config.svg)](https://github.com/rgglez/go-config/releases/)
 ![GitHub stars](https://img.shields.io/github/stars/rgglez/go-config?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/rgglez/go-config?style=social)
